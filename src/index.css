@@ -166,42 +166,126 @@
   animation: heart-beat 1.8s infinite ease-in-out;
 }
 
-/* 3D Page Flip Animations */
+/* 3D Page Flip Animations - Desktop Dual Spread */
 @keyframes flipNextPage {
   0% {
-    transform: rotateY(0deg);
-    filter: drop-shadow(0px 10px 25px rgba(0, 0, 0, 0.2));
+    transform: rotateY(0deg) skewY(0deg);
+    filter: drop-shadow(0px 8px 20px rgba(0, 0, 0, 0.2));
   }
-  50% {
+  35% {
+    transform: rotateY(-65deg) skewY(-2deg);
     filter: drop-shadow(-15px 20px 35px rgba(0, 0, 0, 0.45));
   }
+  70% {
+    transform: rotateY(-130deg) skewY(1.5deg);
+    filter: drop-shadow(-20px 22px 38px rgba(0, 0, 0, 0.4));
+  }
   100% {
-    transform: rotateY(-180deg);
-    filter: drop-shadow(0px 10px 25px rgba(0, 0, 0, 0.2));
+    transform: rotateY(-180deg) skewY(0deg);
+    filter: drop-shadow(0px 8px 20px rgba(0, 0, 0, 0.2));
   }
 }
 
 @keyframes flipPrevPage {
   0% {
-    transform: rotateY(-180deg);
-    filter: drop-shadow(0px 10px 25px rgba(0, 0, 0, 0.2));
+    transform: rotateY(-180deg) skewY(0deg);
+    filter: drop-shadow(0px 8px 20px rgba(0, 0, 0, 0.2));
   }
-  50% {
+  35% {
+    transform: rotateY(-130deg) skewY(1.5deg);
+    filter: drop-shadow(20px 22px 38px rgba(0, 0, 0, 0.4));
+  }
+  70% {
+    transform: rotateY(-65deg) skewY(-2deg);
     filter: drop-shadow(15px 20px 35px rgba(0, 0, 0, 0.45));
   }
   100% {
-    transform: rotateY(0deg);
-    filter: drop-shadow(0px 10px 25px rgba(0, 0, 0, 0.2));
+    transform: rotateY(0deg) skewY(0deg);
+    filter: drop-shadow(0px 8px 20px rgba(0, 0, 0, 0.2));
   }
 }
 
 .animate-flip-next {
-  animation: flipNextPage 0.75s cubic-bezier(0.3, 1, 0.4, 1) forwards;
+  animation: flipNextPage 0.75s cubic-bezier(0.25, 1, 0.4, 1) forwards;
   transform-origin: left center;
 }
 
 .animate-flip-prev {
-  animation: flipPrevPage 0.75s cubic-bezier(0.3, 1, 0.4, 1) forwards;
+  animation: flipPrevPage 0.75s cubic-bezier(0.25, 1, 0.4, 1) forwards;
   transform-origin: right center;
 }
+
+/* 3D Page Flip Animations - Mobile Single Page (Peeling towards Left Spine) */
+@keyframes mobileFlipNext {
+  0% {
+    transform: perspective(1600px) rotateY(0deg) skewY(0deg);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  }
+  30% {
+    transform: perspective(1600px) rotateY(-35deg) skewY(-2.5deg) scale(0.98);
+    box-shadow: -15px 12px 32px rgba(0, 0, 0, 0.45);
+  }
+  65% {
+    transform: perspective(1600px) rotateY(-80deg) skewY(-3.5deg) scale(0.96);
+    box-shadow: -25px 16px 45px rgba(0, 0, 0, 0.6);
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: perspective(1600px) rotateY(-110deg) skewY(-2deg) scale(0.93);
+    box-shadow: -30px 18px 50px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+  }
+}
+
+@keyframes mobileFlipPrev {
+  0% {
+    transform: perspective(1600px) rotateY(-110deg) skewY(-2deg) scale(0.93);
+    opacity: 0;
+    box-shadow: -30px 18px 50px rgba(0, 0, 0, 0.3);
+  }
+  20% {
+    opacity: 0.8;
+  }
+  45% {
+    transform: perspective(1600px) rotateY(-75deg) skewY(-3.5deg) scale(0.96);
+    opacity: 1;
+    box-shadow: -25px 16px 45px rgba(0, 0, 0, 0.6);
+  }
+  75% {
+    transform: perspective(1600px) rotateY(-30deg) skewY(-2deg) scale(0.98);
+    box-shadow: -12px 10px 30px rgba(0, 0, 0, 0.35);
+  }
+  100% {
+    transform: perspective(1600px) rotateY(0deg) skewY(0deg) scale(1);
+    opacity: 1;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.animate-mobile-flip-next {
+  animation: mobileFlipNext 0.6s cubic-bezier(0.25, 1, 0.45, 1) forwards;
+  transform-origin: left center;
+}
+
+.animate-mobile-flip-prev {
+  animation: mobileFlipPrev 0.6s cubic-bezier(0.25, 1, 0.45, 1) forwards;
+  transform-origin: left center;
+}
+
+/* Dynamic Paper Curl Sheen for Turning Page */
+.page-curl-sheen {
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0) 30%,
+    rgba(255, 255, 255, 0.35) 50%,
+    rgba(0, 0, 0, 0.25) 70%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
 

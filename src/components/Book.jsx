@@ -183,7 +183,7 @@ export default function Book({ storyData, onPhotoClick, pageFlipRef, onPageChang
                 <Heart className="text-amber-300 fill-rose-500/60 animate-heart-beat" size={28} />
               </div>
               <span className="text-[11px] uppercase tracking-[0.3em] text-amber-300/80 mt-3 font-sans font-medium">
-                A True Love Story
+                A Love Story
               </span>
             </div>
 
