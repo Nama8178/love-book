@@ -8,6 +8,68 @@ import { soundEngine } from '../utils/audio';
 import RelationshipTimer from './RelationshipTimer';
 import InteractiveEnvelope from './InteractiveEnvelope';
 
+function RunningNoButton({ yesClicked }) {
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const [attempt, setAttempt] = useState(0);
+
+  if (yesClicked) return null;
+
+  const noTexts = [
+    "No 💔",
+    "Are you sure? 🥺",
+    "Nice try! 😜",
+    "Can't click this! 🏃‍♂️",
+    "Not an option! ❤️",
+    "Still trying? 😂",
+    "Forever is better! 😉",
+  ];
+
+  const moveButton = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    soundEngine.playHeartbeat();
+    setAttempt((prev) => prev + 1);
+
+    const getRandomOffset = (current, minRange, maxRange, minDistance) => {
+      let next;
+      let tries = 0;
+      do {
+        next = Math.floor(Math.random() * (maxRange - minRange + 1)) + minRange;
+        tries++;
+      } while (Math.abs(next - current) < minDistance && tries < 10);
+      return next;
+    };
+
+    setPos((prev) => ({
+      x: getRandomOffset(prev.x, -100, 100, 45),
+      y: getRandomOffset(prev.y, -60, 60, 35),
+    }));
+  };
+
+  return (
+    <div
+      className="mt-3 flex justify-center"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <button
+        type="button"
+        onMouseEnter={moveButton}
+        onClick={moveButton}
+        onTouchStart={moveButton}
+        style={{
+          transform: `translate(${pos.x}px, ${pos.y}px)`,
+          transition: 'transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1)',
+        }}
+        className="px-4 py-1.5 rounded-full border border-stone-300 bg-white/90 hover:bg-white text-stone-600 text-xs font-handwriting font-bold shadow-xs select-none active:scale-90 cursor-pointer"
+      >
+        {noTexts[attempt % noTexts.length]}
+      </button>
+    </div>
+  );
+}
+
 export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPageChange }) {
   // bookState: 'closed' | 'open'
   const [isOpen, setIsOpen] = useState(false);
@@ -762,6 +824,9 @@ export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPage
                   </span>
                 </div>
               </div>
+
+              {/* Running 'No' Button that escapes whenever hovered or clicked */}
+              <RunningNoButton yesClicked={yesClicked} />
 
               {yesClicked && (
                 <p className="font-handwriting text-xl text-rose-700 animate-bounce pt-1 font-bold">
