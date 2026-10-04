@@ -7,11 +7,7 @@
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    background-color: #0d0a12;
-    background-image: 
-      radial-gradient(at 0% 0%, rgba(225, 29, 72, 0.15) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, rgba(212, 175, 55, 0.12) 0px, transparent 50%),
-      radial-gradient(at 50% 50%, rgba(26, 16, 37, 1) 0px, rgba(11, 9, 14, 1) 100%);
+    background-color: #0b090e;
     min-height: 100vh;
     user-select: none;
     -webkit-user-select: none;

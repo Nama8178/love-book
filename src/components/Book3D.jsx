@@ -751,17 +751,16 @@ export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPage
                 {pages[6]?.finalQuote}
               </p>
 
-              <div className="pt-2">
-                <button
+              <div className="pt-2" onClick={(e) => e.stopPropagation()}>
+                <div
                   onClick={handleYesProposal}
-                  className={`px-6 py-2.5 rounded-full font-serif text-xs font-bold uppercase tracking-wider transition-all duration-300 transform shadow-md ${
-                    yesClicked
-                      ? 'bg-rose-600 text-white scale-105 shadow-glow-rose'
-                      : 'bg-gradient-to-r from-amber-500 via-rose-500 to-amber-600 hover:from-amber-400 hover:to-rose-400 text-white hover:scale-105 active:scale-95 shadow-glow-gold'
-                  }`}
+                  className="cursor-pointer inline-flex items-center gap-2 px-5 py-2 rounded-full border border-rose-300 bg-rose-50/90 shadow-sm hover:scale-105 active:scale-95 transition-transform"
                 >
-                  {yesClicked ? "Forever & Always ❤️" : "Yes, My Love! ❤️"}
-                </button>
+                  <Heart size={16} className="fill-rose-600 text-rose-600 animate-heart-beat" />
+                  <span className="font-handwriting text-lg text-rose-950 font-bold">
+                    {yesClicked ? "Our Forever Begins ❤️" : "Forever & Always ❤️"}
+                  </span>
+                </div>
               </div>
 
               {yesClicked && (
@@ -798,14 +797,9 @@ export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPage
               </p>
             </div>
 
-            <div className="border-t border-amber-900/20 pt-2 flex justify-between items-center text-xs text-amber-900">
+            <div className="border-t border-amber-900/20 pt-2 flex justify-between items-center text-[10px] font-mono text-amber-900/70">
               <span>End of Volume I</span>
-              <button
-                onClick={(e) => { e.stopPropagation(); handleCloseBook(); }}
-                className="underline hover:text-rose-700 cursor-pointer font-serif"
-              >
-                Close Book ↺
-              </button>
+              <span>Forever & Always</span>
             </div>
           </div>
         );
@@ -883,16 +877,11 @@ export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPage
                 </p>
               </div>
 
-              {/* Click to Open Lock Button */}
-              <div className="mb-4 flex flex-col items-center">
-                <div className="group/btn flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-stone-900 font-semibold text-xs tracking-wider uppercase shadow-glow-gold group-hover:scale-105 transition-all duration-300">
-                  <Unlock size={15} className="group-hover/btn:rotate-12 transition-transform" />
-                  <span>Click to Open Book</span>
-                  <Sparkles size={15} />
+              {/* Embossed Gold Medallion */}
+              <div className="mb-6 flex flex-col items-center pointer-events-none">
+                <div className="w-12 h-12 rounded-full border border-amber-400/50 flex items-center justify-center bg-amber-950/40 shadow-glow-gold">
+                  <Heart className="text-amber-300 fill-rose-500/60 animate-heart-beat" size={22} />
                 </div>
-                <span className="text-[10px] text-amber-300/60 mt-2 font-mono animate-pulse">
-                  ✨ Tap anywhere to open our memories ✨
-                </span>
               </div>
             </div>
           </div>
@@ -927,12 +916,6 @@ export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPage
               }`}
               title={currentSpread === 0 ? "Click to close book" : "Click left page to go back"}
             >
-              {/* Subtle hover curl hint icon */}
-              <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-75 transition-opacity text-amber-800/60 font-mono text-[11px] flex items-center gap-1 z-20">
-                <ChevronLeft size={14} />
-                <span>{currentSpread === 0 ? "Close" : "Prev Page"}</span>
-              </div>
-
               {renderLeftPage(currentSpread)}
             </div>
 
@@ -945,12 +928,6 @@ export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPage
               className="relative flex-1 h-full book-page page-right rounded-r-lg overflow-hidden cursor-pointer group transition-colors duration-200 z-10 hover:bg-amber-100/40"
               title={currentSpread >= totalSpreads - 1 ? "Click to close book" : "Click right page to turn next"}
             >
-              {/* Subtle hover curl hint icon */}
-              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-75 transition-opacity text-amber-800/60 font-mono text-[11px] flex items-center gap-1 z-20">
-                <span>{currentSpread >= totalSpreads - 1 ? "Close" : "Next Page"}</span>
-                <ChevronRight size={14} />
-              </div>
-
               {renderRightPage(currentSpread)}
             </div>
 
@@ -993,48 +970,6 @@ export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPage
               </div>
             )}
 
-          </div>
-
-          {/* ================= OPEN BOOK BOTTOM CONTROLS ================= */}
-          <div className="mt-5 flex items-center justify-center gap-3 sm:gap-4 z-20">
-            {/* Prev Page Button */}
-            <button
-              onClick={handlePrevPage}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-rose-950/70 hover:bg-rose-900 border border-amber-500/40 text-amber-200 hover:border-amber-400 shadow-md backdrop-blur-md transition-all active:scale-95 text-xs font-serif"
-              title="Previous Page (or click left page)"
-            >
-              <ChevronLeft size={15} />
-              <span>{currentSpread === 0 ? "Close Book" : "Prev Page"}</span>
-            </button>
-
-            {/* Spread Indicator */}
-            <div className="px-4 py-1.5 rounded-full bg-black/60 border border-amber-500/30 text-amber-300 text-xs font-mono backdrop-blur-md">
-              Spread {currentSpread + 1} / {totalSpreads}
-            </div>
-
-            {/* Next Page Button */}
-            <button
-              onClick={handleNextPage}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-rose-950/70 hover:bg-rose-900 border border-amber-500/40 text-amber-200 hover:border-amber-400 shadow-md backdrop-blur-md transition-all active:scale-95 text-xs font-serif"
-              title="Next Page (or click right page)"
-            >
-              <span>{currentSpread >= totalSpreads - 1 ? "Close Book" : "Next Page"}</span>
-              <ChevronRight size={15} />
-            </button>
-
-            {/* Close Book Button */}
-            <button
-              onClick={handleCloseBook}
-              className="p-2 rounded-full bg-stone-900/80 hover:bg-rose-950 border border-amber-500/30 text-amber-200/80 hover:text-white backdrop-blur-md transition-all"
-              title="Close Book"
-            >
-              <BookOpen size={15} />
-            </button>
-          </div>
-
-          {/* Helpful Navigation Hint */}
-          <div className="text-[11px] text-amber-300/60 font-serif italic mt-2 animate-pulse">
-            Tip: Click directly on the right page to turn next, or click the left page to go back
           </div>
 
         </div>
