@@ -1,77 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Heart, Sparkles, ChevronLeft, ChevronRight, Unlock, Lock,
-  BookOpen, Feather, Calendar, MapPin, Compass, RefreshCw
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Heart, Sparkles } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { soundEngine } from '../utils/audio';
 import RelationshipTimer from './RelationshipTimer';
 import InteractiveEnvelope from './InteractiveEnvelope';
 
-function RunningNoButton({ yesClicked }) {
-  const [pos, setPos] = useState({ x: 0, y: 0 });
-  const [attempt, setAttempt] = useState(0);
-
-  if (yesClicked) return null;
-
-  const noTexts = [
-    "No 💔",
-    "Are you sure? 🥺",
-    "Nice try! 😜",
-    "Can't click this! 🏃‍♂️",
-    "Not an option! ❤️",
-    "Still trying? 😂",
-    "Forever is better! 😉",
-  ];
-
-  const moveButton = (e) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    soundEngine.playHeartbeat();
-    setAttempt((prev) => prev + 1);
-
-    const getRandomOffset = (current, minRange, maxRange, minDistance) => {
-      let next;
-      let tries = 0;
-      do {
-        next = Math.floor(Math.random() * (maxRange - minRange + 1)) + minRange;
-        tries++;
-      } while (Math.abs(next - current) < minDistance && tries < 10);
-      return next;
-    };
-
-    setPos((prev) => ({
-      x: getRandomOffset(prev.x, -100, 100, 45),
-      y: getRandomOffset(prev.y, -60, 60, 35),
-    }));
-  };
-
-  return (
-    <div
-      className="mt-3 flex justify-center"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <button
-        type="button"
-        onMouseEnter={moveButton}
-        onClick={moveButton}
-        onTouchStart={moveButton}
-        style={{
-          transform: `translate(${pos.x}px, ${pos.y}px)`,
-          transition: 'transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1)',
-        }}
-        className="px-4 py-1.5 rounded-full border border-stone-300 bg-white/90 hover:bg-white text-stone-600 text-xs font-handwriting font-bold shadow-xs select-none active:scale-90 cursor-pointer"
-      >
-        {noTexts[attempt % noTexts.length]}
-      </button>
-    </div>
-  );
-}
-
 export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPageChange }) {
-  // bookState: 'closed' | 'open'
   const [isOpen, setIsOpen] = useState(false);
   const [currentSpread, setCurrentSpread] = useState(0); // 0 to 7
   const [isFlipping, setIsFlipping] = useState(false);
@@ -126,7 +60,6 @@ export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPage
   const handleNextPage = () => {
     if (isFlipping || !isOpen) return;
     if (currentSpread >= totalSpreads - 1) {
-      // At the end, clicking right page closes book
       handleCloseBook();
       return;
     }
@@ -150,7 +83,6 @@ export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPage
   const handlePrevPage = () => {
     if (isFlipping || !isOpen) return;
     if (currentSpread <= 0) {
-      // If on first spread and clicking left, close the book
       handleCloseBook();
       return;
     }
@@ -170,7 +102,6 @@ export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPage
     }, 750);
   };
 
-  // Jump to specific spread/page
   const handleJumpTo = (spreadIdx) => {
     if (isFlipping) return;
     if (!isOpen) setIsOpen(true);
@@ -179,7 +110,6 @@ export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPage
     if (onPageChange) onPageChange(spreadIdx * 2 + 1);
   };
 
-  // Expose controls to ref
   useEffect(() => {
     if (bookControlRef) {
       bookControlRef.current = {
@@ -238,37 +168,58 @@ export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPage
     fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, colors: ['#e11d48', '#f43f5e'] });
   };
 
+  // Helper for polaroid photo rendering
+  const renderPolaroid = (photo, heightClass = "h-40 sm:h-44", customClass = "") => {
+    if (!photo) return null;
+    return (
+      <div
+        className={`polaroid cursor-pointer mx-auto ${customClass}`}
+        style={{ transform: `rotate(${photo.rotation || 0}deg)` }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onPhotoClick(photo);
+        }}
+      >
+        <div className="tape" />
+        <img
+          src={photo.url}
+          alt={photo.caption || "Memory"}
+          className={`w-full ${heightClass} object-cover rounded-xs`}
+        />
+        {photo.caption && (
+          <p className="font-handwriting text-sm text-gray-800 mt-2 text-center truncate px-1">
+            {photo.caption}
+          </p>
+        )}
+      </div>
+    );
+  };
+
   // ================= RENDER SPREAD CONTENT HELPERS =================
   const renderLeftPage = (spreadIndex) => {
     switch (spreadIndex) {
       case 0:
-        // Inside Front Cover / Dedication
+        // Inside Front Cover / Dedication (with couple photo!)
         return (
-          <div className="h-full flex flex-col justify-between p-6 sm:p-8">
-            <div className="border border-amber-900/30 p-3 sm:p-4 rounded-lg bg-amber-50/50">
-              <div className="flex items-center justify-between border-b border-amber-900/20 pb-2 mb-2">
+          <div className="h-full flex flex-col justify-between p-6 sm:p-7">
+            <div>
+              <div className="flex items-center justify-between border-b border-amber-900/20 pb-1.5">
                 <span className="text-[10px] uppercase font-mono tracking-widest text-amber-900 font-bold">
-                  Ex Libris • Memory Archive
+                  Memory Archive
                 </span>
                 <span className="text-amber-800 text-xs font-mono">№ 001</span>
               </div>
-              <p className="font-serif italic text-xs text-amber-950/80">
-                Belongs to the treasured memories of {couple.hisName} & {couple.herName}.
+              <h2 className="font-serif text-2xl text-amber-950 font-bold mt-2">
+                For You, Always
+              </h2>
+              <p className="font-serif italic text-xs text-rose-800/80">
+                {couple.dedication}
               </p>
             </div>
 
-            <div className="my-auto py-3 text-center">
-              <div className="text-amber-700/60 font-serif text-3xl mb-1">❝</div>
-              <h2 className="font-serif text-xl sm:text-2xl text-amber-950 font-bold mb-2">
-                For You, Always
-              </h2>
-              <p className="font-serif italic text-sm sm:text-base text-amber-900/90 leading-relaxed max-w-sm mx-auto">
-                {couple.dedication}
-              </p>
-              <div className="w-16 h-0.5 bg-rose-400/40 mx-auto my-3" />
-              <p className="font-cursive text-2xl sm:text-3xl text-rose-800">
-                Yours Eternally
-              </p>
+            {/* Dedication Photo */}
+            <div className="my-auto py-2">
+              {renderPolaroid(pages[0]?.dedicationPhoto, "h-44 sm:h-48", "max-w-[270px]")}
             </div>
 
             <div className="flex items-center justify-between text-[10px] text-amber-800/70 border-t border-amber-900/20 pt-2 font-mono">
@@ -279,323 +230,11 @@ export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPage
         );
 
       case 1:
-        // Chapter 1 (Continuation / Story Left)
+        // Chapter 2 (Left: 2 Travel Photos)
         return (
-          <div className="h-full flex flex-col justify-between p-6 sm:p-8">
-            <div className="text-right border-b border-amber-900/20 pb-2">
-              <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
-                The First Spark
-              </span>
-            </div>
-
-            <p className="font-serif text-xs sm:text-sm text-amber-950/80 leading-relaxed text-justify mt-2">
-              {pages[0]?.storyRight}
-            </p>
-
-            <div
-              className="polaroid my-auto cursor-pointer mx-auto max-w-[250px]"
-              style={{ transform: `rotate(${pages[0]?.photo2?.rotation || 2}deg)` }}
-              onClick={(e) => { e.stopPropagation(); onPhotoClick(pages[0]?.photo2); }}
-            >
-              <div className="tape" />
-              <img
-                src={pages[0]?.photo2?.url}
-                alt="Memory"
-                className="w-full h-36 sm:h-40 object-cover rounded-sm"
-              />
-              <p className="font-handwriting text-sm text-gray-800 mt-2 text-center">
-                {pages[0]?.photo2?.caption}
-              </p>
-            </div>
-
-            <div className="p-3 bg-rose-50/70 border-l-2 border-rose-600 rounded-r-lg">
-              <p className="font-serif italic text-xs text-rose-900 leading-snug">
-                {pages[0]?.quote}
-              </p>
-            </div>
-
-            <div className="text-left text-[10px] font-mono text-amber-800/50">Page 3</div>
-          </div>
-        );
-
-      case 2:
-        // Chapter 2 (Under the Stars / Travel story)
-        return (
-          <div className="h-full flex flex-col justify-between p-6 sm:p-8">
-            <div className="text-right border-b border-amber-900/20 pb-2">
-              <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
-                Under The Same Sky
-              </span>
-            </div>
-
-            <p className="font-serif text-xs sm:text-sm text-amber-950/80 leading-relaxed text-justify mt-2">
-              {pages[1]?.storyRight}
-            </p>
-
-            <div
-              className="polaroid my-auto cursor-pointer mx-auto max-w-[250px]"
-              style={{ transform: `rotate(${pages[1]?.photo2?.rotation || -2}deg)` }}
-              onClick={(e) => { e.stopPropagation(); onPhotoClick(pages[1]?.photo2); }}
-            >
-              <div className="tape" />
-              <img
-                src={pages[1]?.photo2?.url}
-                alt="Adventures"
-                className="w-full h-36 sm:h-40 object-cover rounded-sm"
-              />
-              <p className="font-handwriting text-sm text-gray-800 mt-2 text-center">
-                {pages[1]?.photo2?.caption}
-              </p>
-            </div>
-
-            <div className="p-3 bg-amber-50/60 rounded-lg border-l-2 border-amber-500">
-              <p className="text-[11px] text-amber-900/80 italic font-serif">
-                “Every mile shared with you became a golden memory etched forever.”
-              </p>
-            </div>
-
-            <div className="text-left text-[10px] font-mono text-amber-800/50">Page 5</div>
-          </div>
-        );
-
-      case 3:
-        // Chapter 3 (Her Portrait)
-        return (
-          <div className="h-full flex flex-col justify-between p-6 sm:p-8">
-            <div className="text-right border-b border-amber-900/20 pb-2">
-              <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
-                The Girl of My Dreams
-              </span>
-            </div>
-
-            <div
-              className="polaroid my-auto cursor-pointer mx-auto max-w-[260px]"
-              style={{ transform: `rotate(${pages[2]?.photo1?.rotation || -1}deg)` }}
-              onClick={(e) => { e.stopPropagation(); onPhotoClick(pages[2]?.photo1); }}
-            >
-              <div className="tape" />
-              <img
-                src={pages[2]?.photo1?.url}
-                alt="Her Portrait"
-                className="w-full h-44 sm:h-48 object-cover rounded-sm"
-              />
-              <p className="font-handwriting text-base text-rose-800 mt-2 text-center font-bold">
-                {pages[2]?.photo1?.caption}
-              </p>
-            </div>
-
-            <div className="p-3 bg-amber-100/50 border border-amber-300/60 rounded-xl text-center">
-              <p className="font-handwriting text-sm sm:text-base text-amber-900">
-                "{pages[2]?.loveQuote}"
-              </p>
-            </div>
-
-            <div className="text-left text-[10px] font-mono text-amber-800/50">Page 7</div>
-          </div>
-        );
-
-      case 4:
-        // Chapter 4 (Spontaneous Magic / Inside Joke)
-        return (
-          <div className="h-full flex flex-col justify-between p-6 sm:p-8">
-            <div className="text-right border-b border-amber-900/20 pb-2">
-              <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
-                Spontaneous Magic
-              </span>
-            </div>
-
-            <p className="font-serif text-xs sm:text-sm text-amber-950/80 leading-relaxed text-justify mt-2">
-              {pages[3]?.storyRight}
-            </p>
-
-            <div className="my-auto p-4 bg-[#fbf6ec] border border-amber-300 rounded-lg shadow-sm relative">
-              <div className="absolute -top-3 right-4 bg-rose-200/90 text-rose-900 text-[10px] px-2 py-0.5 rounded-full font-mono">
-                Inside Joke #47
-              </div>
-              <p className="font-handwriting text-base sm:text-lg text-amber-950 leading-relaxed">
-                “With you, even silence feels like the warmest conversation. You are the coffee to my mornings and the starlight to my nights.”
-              </p>
-              <div className="text-right mt-2 font-cursive text-xl text-rose-800">
-                — Forever Laughing With You
-              </div>
-            </div>
-
-            <div className="p-2.5 bg-amber-50/60 rounded-lg border-l-2 border-amber-500">
-              <p className="text-[11px] text-amber-900/80 italic font-serif">
-                “Happiness isn't a destination; it's you laughing right beside me.”
-              </p>
-            </div>
-
-            <div className="text-left text-[10px] font-mono text-amber-800/50">Page 9</div>
-          </div>
-        );
-
-      case 5:
-        // Chapter 5 (Poem before secret letter)
-        return (
-          <div className="h-full flex flex-col justify-between p-6 sm:p-8">
-            <div className="flex items-center justify-between border-b border-amber-900/20 pb-2">
-              <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
-                Chapter 05
-              </span>
-              <span className="text-xs font-mono text-amber-800/80">
-                {pages[4]?.date}
-              </span>
-            </div>
-
-            <div className="my-auto text-center space-y-4 px-3">
-              <Feather size={32} className="text-amber-700/60 mx-auto" />
-              <h3 className="font-serif text-xl sm:text-2xl text-amber-950 font-bold">
-                {pages[4]?.chapterTitle}
-              </h3>
-              <p className="font-handwriting text-base sm:text-lg text-amber-950 leading-relaxed">
-                “There are some confessions that cannot simply be printed in black ink on paper. They must be folded with trembling fingers, sealed with hope, and given only to the one soul who holds your heartbeat.”
-              </p>
-              <div className="w-16 h-0.5 bg-rose-400/40 mx-auto" />
-              <p className="font-serif text-xs text-rose-800/70 uppercase tracking-widest">
-                Tap the wax seal on the right page ➔
-              </p>
-            </div>
-
-            <div className="text-left text-[10px] font-mono text-amber-800/50">Page 11</div>
-          </div>
-        );
-
-      case 6:
-        // Chapter 6 (Live Relationship Timer)
-        return (
-          <div className="h-full flex flex-col justify-between p-5 sm:p-8">
+          <div className="h-full flex flex-col justify-between p-5 sm:p-7">
             <div>
-              <div className="flex items-center justify-between border-b border-amber-900/20 pb-2">
-                <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
-                  Chapter 06
-                </span>
-                <span className="text-xs font-mono text-amber-800/80">
-                  {pages[5]?.date}
-                </span>
-              </div>
-              <h3 className="font-serif text-xl sm:text-2xl text-amber-950 font-bold mt-2">
-                {pages[5]?.chapterTitle}
-              </h3>
-            </div>
-
-            <div onClick={(e) => e.stopPropagation()}>
-              <RelationshipTimer startDateString={couple.anniversaryDate} />
-            </div>
-
-            <div className="space-y-1.5 my-auto">
-              {pages[5]?.milestones?.map((m, idx) => (
-                <div key={idx} className="flex items-center gap-2 p-1.5 bg-amber-100/50 rounded-lg text-xs">
-                  <span className="font-mono font-bold text-rose-800 shrink-0 text-[11px]">{m.date}</span>
-                  <div className="border-l border-amber-300 pl-2">
-                    <span className="font-serif font-bold text-amber-950 block text-[11px]">{m.title}</span>
-                    <span className="text-[10px] text-amber-900/70">{m.desc}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="text-left text-[10px] font-mono text-amber-800/50">Page 13</div>
-          </div>
-        );
-
-      case 7:
-        // Chapter 7 (Sacred Promises)
-        return (
-          <div className="h-full flex flex-col justify-between p-6 sm:p-8">
-            <div>
-              <div className="flex items-center justify-between border-b border-amber-900/20 pb-2">
-                <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
-                  Chapter 07
-                </span>
-                <span className="text-xs font-mono text-amber-800/80">
-                  {pages[6]?.date}
-                </span>
-              </div>
-              <h3 className="font-serif text-xl sm:text-2xl text-amber-950 font-bold mt-2">
-                {pages[6]?.chapterTitle}
-              </h3>
-              <p className="font-serif italic text-xs text-rose-700/80 mb-2">
-                {pages[6]?.tagline}
-              </p>
-            </div>
-
-            <div className="space-y-2.5 my-auto">
-              {pages[6]?.promises?.map((promise, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-start gap-2.5 p-2.5 rounded-xl bg-amber-50/90 border border-amber-200/80 shadow-xs"
-                >
-                  <Heart size={14} className="text-rose-600 fill-rose-500 shrink-0 mt-0.5" />
-                  <p className="font-serif text-xs text-amber-950 leading-relaxed">
-                    {promise}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <div className="text-left text-[10px] font-mono text-amber-800/50">Page 15</div>
-          </div>
-        );
-
-      default:
-        return null;
-    }
-  };
-
-  const renderRightPage = (spreadIndex) => {
-    switch (spreadIndex) {
-      case 0:
-        // Chapter 1 (The Serendipity / Photo 1)
-        return (
-          <div className="h-full flex flex-col justify-between p-6 sm:p-8">
-            <div>
-              <div className="flex items-center justify-between border-b border-amber-900/20 pb-2">
-                <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
-                  Chapter 01
-                </span>
-                <span className="text-xs font-mono text-amber-800/80">
-                  {pages[0]?.date}
-                </span>
-              </div>
-              <h3 className="font-serif text-xl sm:text-2xl text-amber-950 font-bold mt-2">
-                {pages[0]?.chapterTitle}
-              </h3>
-              <p className="font-serif italic text-xs text-rose-700/80 mb-3">
-                {pages[0]?.tagline}
-              </p>
-            </div>
-
-            <div
-              className="polaroid my-auto cursor-pointer mx-auto max-w-[250px]"
-              style={{ transform: `rotate(${pages[0]?.photo1?.rotation || -2}deg)` }}
-              onClick={(e) => { e.stopPropagation(); onPhotoClick(pages[0]?.photo1); }}
-            >
-              <div className="tape" />
-              <img
-                src={pages[0]?.photo1?.url}
-                alt="Memory"
-                className="w-full h-36 sm:h-40 object-cover rounded-sm"
-              />
-              <p className="font-handwriting text-sm text-gray-800 mt-2 text-center">
-                {pages[0]?.photo1?.caption}
-              </p>
-            </div>
-
-            <p className="font-serif text-xs sm:text-sm text-amber-950/80 leading-relaxed text-justify">
-              {pages[0]?.storyLeft}
-            </p>
-
-            <div className="text-right text-[10px] font-mono text-amber-800/50">Page 2</div>
-          </div>
-        );
-
-      case 1:
-        // Chapter 2 (Wandering Together / Boarding Pass)
-        return (
-          <div className="h-full flex flex-col justify-between p-6 sm:p-8">
-            <div>
-              <div className="flex items-center justify-between border-b border-amber-900/20 pb-2">
+              <div className="flex items-center justify-between border-b border-amber-900/20 pb-1.5">
                 <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
                   Chapter 02
                 </span>
@@ -603,49 +242,27 @@ export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPage
                   {pages[1]?.date}
                 </span>
               </div>
-              <h3 className="font-serif text-xl sm:text-2xl text-amber-950 font-bold mt-2">
+              <h3 className="font-serif text-2xl text-amber-950 font-bold mt-2">
                 {pages[1]?.chapterTitle}
               </h3>
             </div>
 
-            <div
-              className="polaroid my-auto cursor-pointer mx-auto max-w-[250px]"
-              style={{ transform: `rotate(${pages[1]?.photo1?.rotation || 2}deg)` }}
-              onClick={(e) => { e.stopPropagation(); onPhotoClick(pages[1]?.photo1); }}
-            >
-              <div className="tape" />
-              <img
-                src={pages[1]?.photo1?.url}
-                alt="Travel"
-                className="w-full h-36 sm:h-40 object-cover rounded-sm"
-              />
-              <p className="font-handwriting text-sm text-gray-800 mt-2 text-center">
-                {pages[1]?.photo1?.caption}
-              </p>
+            {/* Dual Travel Photos */}
+            <div className="grid grid-cols-2 gap-3 my-auto py-1">
+              {renderPolaroid(pages[1]?.photo1, "h-36 sm:h-40")}
+              {renderPolaroid(pages[1]?.photo2, "h-36 sm:h-40")}
             </div>
 
-            {/* Boarding Pass Stub */}
-            <div className="p-2.5 bg-amber-100/70 border border-dashed border-amber-900/40 rounded-lg text-xs font-mono text-amber-950 shadow-xs">
-              <div className="flex justify-between items-center border-b border-dashed border-amber-900/30 pb-1 mb-1.5 text-[10px]">
-                <span className="font-bold">PASSENGER TICKET</span>
-                <span className="text-rose-700 font-bold">LOVE-777</span>
-              </div>
-              <div className="flex justify-between text-[10px]">
-                <span>DESTINATION: <b>Wherever You Are</b></span>
-                <span>SEAT: <b>Beside You</b></span>
-              </div>
-            </div>
-
-            <div className="text-right text-[10px] font-mono text-amber-800/50">Page 4</div>
+            <div className="text-left text-[10px] font-mono text-amber-800/50">Page 3</div>
           </div>
         );
 
       case 2:
-        // Chapter 3 (Reasons My Heart Chose You)
+        // Chapter 3 (Left: 2 Sweet Photos)
         return (
-          <div className="h-full flex flex-col justify-between p-6 sm:p-8">
+          <div className="h-full flex flex-col justify-between p-5 sm:p-7">
             <div>
-              <div className="flex items-center justify-between border-b border-amber-900/20 pb-2">
+              <div className="flex items-center justify-between border-b border-amber-900/20 pb-1.5">
                 <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
                   Chapter 03
                 </span>
@@ -653,42 +270,27 @@ export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPage
                   {pages[2]?.date}
                 </span>
               </div>
-              <h3 className="font-serif text-xl sm:text-2xl text-amber-950 font-bold mt-2">
+              <h3 className="font-serif text-2xl text-amber-950 font-bold mt-2">
                 {pages[2]?.chapterTitle}
               </h3>
             </div>
 
-            <div className="space-y-2 my-auto">
-              {pages[2]?.reasons?.map((item) => (
-                <div
-                  key={item.id}
-                  className="p-2 rounded-lg bg-amber-50/80 border border-amber-200/80 shadow-xs flex items-start gap-2"
-                >
-                  <span className="w-4 h-4 rounded-full bg-rose-200 text-rose-800 flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">
-                    {item.id}
-                  </span>
-                  <div>
-                    <h5 className="font-serif text-xs font-bold text-amber-950">
-                      {item.title}
-                    </h5>
-                    <p className="text-[10px] text-amber-900/80 leading-tight">
-                      {item.desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
+            {/* 2 Portrait Photos */}
+            <div className="grid grid-cols-2 gap-3 my-auto py-1">
+              {renderPolaroid(pages[2]?.photo2, "h-36 sm:h-40")}
+              {renderPolaroid(pages[2]?.photo3, "h-36 sm:h-40")}
             </div>
 
-            <div className="text-right text-[10px] font-mono text-amber-800/50">Page 6</div>
+            <div className="text-left text-[10px] font-mono text-amber-800/50">Page 5</div>
           </div>
         );
 
       case 3:
-        // Chapter 4 (Film Strip & Candid moments)
+        // Chapter 4 (Left: 35mm Film Strip with 3 Candid Photos)
         return (
-          <div className="h-full flex flex-col justify-between p-6 sm:p-8">
+          <div className="h-full flex flex-col justify-between p-5 sm:p-7">
             <div>
-              <div className="flex items-center justify-between border-b border-amber-900/20 pb-2">
+              <div className="flex items-center justify-between border-b border-amber-900/20 pb-1.5">
                 <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
                   Chapter 04
                 </span>
@@ -696,18 +298,19 @@ export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPage
                   {pages[3]?.date}
                 </span>
               </div>
-              <h3 className="font-serif text-xl sm:text-2xl text-amber-950 font-bold mt-2">
+              <h3 className="font-serif text-2xl text-amber-950 font-bold mt-2">
                 {pages[3]?.chapterTitle}
               </h3>
             </div>
 
-            <div className="my-auto bg-[#1a1412] p-2 rounded-sm border border-amber-950 shadow-md">
-              <div className="flex justify-between px-1 mb-1 text-[8px] text-amber-200/50 font-mono">
+            {/* 35mm Film Strip */}
+            <div className="my-auto bg-[#181210] p-2.5 rounded-sm border border-amber-950 shadow-md">
+              <div className="flex justify-between px-1 mb-1.5 text-[8px] text-amber-200/50 font-mono">
                 <span>■ ■ ■ ■</span>
-                <span>KODAK LOVE 400</span>
+                <span>35MM FILM • CANDID</span>
                 <span>■ ■ ■ ■</span>
               </div>
-              <div className="grid grid-cols-3 gap-1.5">
+              <div className="grid grid-cols-3 gap-2">
                 {pages[3]?.filmPhotos?.map((pic, idx) => (
                   <div
                     key={idx}
@@ -717,125 +320,108 @@ export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPage
                     <img
                       src={pic.url}
                       alt="Candid"
-                      className="w-full h-24 object-cover group-hover:scale-105 transition-transform"
+                      className="w-full h-32 sm:h-36 object-cover group-hover:scale-105 transition-transform"
                     />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-[9px] p-1 text-center transition-opacity">
+                      {pic.caption}
+                    </div>
                   </div>
                 ))}
               </div>
+              <div className="flex justify-between px-1 mt-1.5 text-[8px] text-amber-200/50 font-mono">
+                <span>■ ■ ■ ■</span>
+                <span>KODAK LOVE 400</span>
+                <span>■ ■ ■ ■</span>
+              </div>
             </div>
 
-            <p className="font-serif text-xs sm:text-sm text-amber-950/80 leading-relaxed text-justify">
-              {pages[3]?.storyLeft}
-            </p>
-
-            <div className="text-right text-[10px] font-mono text-amber-800/50">Page 8</div>
+            <div className="text-left text-[10px] font-mono text-amber-800/50">Page 7</div>
           </div>
         );
 
       case 4:
-        // Chapter 5 (The Secret Love Letter Envelope!)
+        // Chapter 5 (Left: Romance Photo)
         return (
-          <div className="h-full flex flex-col justify-between p-5 sm:p-8">
-            <div className="text-right border-b border-amber-900/20 pb-2">
-              <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
-                A Letter For You
-              </span>
+          <div className="h-full flex flex-col justify-between p-5 sm:p-7">
+            <div>
+              <div className="flex items-center justify-between border-b border-amber-900/20 pb-1.5">
+                <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
+                  Chapter 05
+                </span>
+                <span className="text-xs font-mono text-amber-800/80">
+                  {pages[4]?.date}
+                </span>
+              </div>
+              <h3 className="font-serif text-2xl text-amber-950 font-bold mt-2">
+                {pages[4]?.chapterTitle}
+              </h3>
             </div>
 
-            <div className="my-auto w-full" onClick={(e) => e.stopPropagation()}>
-              <InteractiveEnvelope letter={pages[4]?.letter} />
+            {/* Romance Photo */}
+            <div className="my-auto py-2">
+              {renderPolaroid(pages[4]?.letterPhoto, "h-48 sm:h-52", "max-w-[280px]")}
             </div>
 
-            <p className="text-[11px] text-center text-amber-800/60 font-mono">
-              Written with all my heart by {couple.hisName}
-            </p>
-
-            <div className="text-right text-[10px] font-mono text-amber-800/50">Page 10</div>
+            <div className="text-left text-[10px] font-mono text-amber-800/50">Page 9</div>
           </div>
         );
 
       case 5:
-        // Chapter 6 (Portrait & Memory)
+        // Chapter 6 (Left: Live Relationship Timer & Milestone Photo)
         return (
-          <div className="h-full flex flex-col justify-between p-6 sm:p-8">
-            <div className="text-right border-b border-amber-900/20 pb-2">
-              <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
-                Every Second With You
-              </span>
+          <div className="h-full flex flex-col justify-between p-5 sm:p-7">
+            <div>
+              <div className="flex items-center justify-between border-b border-amber-900/20 pb-1.5">
+                <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
+                  Chapter 06
+                </span>
+                <span className="text-xs font-mono text-amber-800/80">
+                  {pages[5]?.date}
+                </span>
+              </div>
+              <h3 className="font-serif text-2xl text-amber-950 font-bold mt-2">
+                {pages[5]?.chapterTitle}
+              </h3>
             </div>
 
-            <div
-              className="polaroid my-auto cursor-pointer mx-auto max-w-[260px]"
-              style={{ transform: `rotate(${pages[5]?.photo1?.rotation || 1}deg)` }}
-              onClick={(e) => { e.stopPropagation(); onPhotoClick(pages[5]?.photo1); }}
-            >
-              <div className="tape" />
-              <img
-                src={pages[5]?.photo1?.url}
-                alt="Milestone"
-                className="w-full h-44 sm:h-48 object-cover rounded-sm"
-              />
-              <p className="font-handwriting text-sm text-gray-800 mt-2 text-center font-bold">
-                {pages[5]?.photo1?.caption}
-              </p>
+            <div onClick={(e) => e.stopPropagation()}>
+              <RelationshipTimer startDateString={couple.anniversaryDate} />
             </div>
 
-            <div className="p-3 bg-rose-50/70 border-l-2 border-rose-600 rounded-r-lg">
-              <p className="font-serif italic text-xs text-rose-900 leading-relaxed">
-                “Time doesn't stop for anyone, but whenever I hold your hand, I swear eternity fits into a single breath.”
-              </p>
+            {/* Milestone Photo */}
+            <div className="my-auto py-1">
+              {renderPolaroid(pages[5]?.milestonePhoto, "h-32 sm:h-36", "max-w-[230px]")}
             </div>
 
-            <div className="text-right text-[10px] font-mono text-amber-800/50">Page 12</div>
+            <div className="text-left text-[10px] font-mono text-amber-800/50">Page 11</div>
           </div>
         );
 
       case 6:
-        // Chapter 7 (Proposal / Will You Make Forever Memories With Me?)
+        // Chapter 7 (Left: 2 Sacred Vows Photos)
         return (
-          <div className="h-full flex flex-col justify-between p-6 sm:p-8 text-center">
-            <div className="text-right border-b border-amber-900/20 pb-2">
-              <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
-                The Question of Forever
-              </span>
+          <div className="h-full flex flex-col justify-between p-5 sm:p-7">
+            <div>
+              <div className="flex items-center justify-between border-b border-amber-900/20 pb-1.5">
+                <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
+                  Chapter 07
+                </span>
+                <span className="text-xs font-mono text-amber-800/80">
+                  {pages[6]?.date}
+                </span>
+              </div>
+              <h3 className="font-serif text-2xl text-amber-950 font-bold mt-2">
+                {pages[6]?.chapterTitle}
+              </h3>
             </div>
 
-            <div className="my-auto py-4 space-y-3">
-              <div className="w-14 h-14 rounded-full bg-rose-100 border-2 border-rose-400 mx-auto flex items-center justify-center shadow-md">
-                <Heart size={26} className="fill-rose-600 text-rose-600 animate-heart-beat" />
-              </div>
-
-              <h4 className="font-serif text-xl sm:text-2xl text-amber-950 font-bold leading-tight">
-                {pages[6]?.finalQuestion}
-              </h4>
-
-              <p className="font-serif italic text-xs text-amber-900/80 max-w-xs mx-auto">
-                {pages[6]?.finalQuote}
-              </p>
-
-              <div className="pt-2" onClick={(e) => e.stopPropagation()}>
-                <div
-                  onClick={handleYesProposal}
-                  className="cursor-pointer inline-flex items-center gap-2 px-5 py-2 rounded-full border border-rose-300 bg-rose-50/90 shadow-sm hover:scale-105 active:scale-95 transition-transform"
-                >
-                  <Heart size={16} className="fill-rose-600 text-rose-600 animate-heart-beat" />
-                  <span className="font-handwriting text-lg text-rose-950 font-bold">
-                    {yesClicked ? "Our Forever Begins ❤️" : "Forever & Always ❤️"}
-                  </span>
-                </div>
-              </div>
-
-              {/* Running 'No' Button that escapes whenever hovered or clicked */}
-              <RunningNoButton yesClicked={yesClicked} />
-
-              {yesClicked && (
-                <p className="font-handwriting text-xl text-rose-700 animate-bounce pt-1 font-bold">
-                  Here's to a lifetime of love and adventure! ✨
-                </p>
-              )}
+            {/* 2 Together Photos */}
+            <div className="grid grid-cols-2 gap-3 my-auto py-1">
+              {renderPolaroid(pages[6]?.photo1, "h-36 sm:h-40")}
+              {renderPolaroid(pages[6]?.photo2, "h-36 sm:h-40")}
             </div>
 
-            <div className="text-right text-[10px] font-mono text-amber-800/50">Page 14</div>
+            <div className="text-left text-[10px] font-mono text-amber-800/50">Page 13</div>
           </div>
         );
 
@@ -856,16 +442,240 @@ export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPage
               <p className="font-serif italic text-base text-amber-950 leading-relaxed max-w-xs mx-auto">
                 “Every love story is beautiful, but ours is my favorite.”
               </p>
-              <div className="w-16 h-0.5 bg-amber-400/50 mx-auto my-3" />
+              <div className="w-16 h-0.5 bg-amber-400/50 mx-auto my-4" />
               <p className="text-xs font-mono uppercase tracking-widest text-amber-800/70">
-                Written with all my heart
+                Forever & Always
               </p>
             </div>
 
             <div className="border-t border-amber-900/20 pt-2 flex justify-between items-center text-[10px] font-mono text-amber-900/70">
               <span>End of Volume I</span>
-              <span>Forever & Always</span>
+              <span>The Journey Continues</span>
             </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  const renderRightPage = (spreadIndex) => {
+    switch (spreadIndex) {
+      case 0:
+        // Chapter 1 (Right: 2 Polaroids side-by-side or stacked!)
+        return (
+          <div className="h-full flex flex-col justify-between p-5 sm:p-7">
+            <div>
+              <div className="flex items-center justify-between border-b border-amber-900/20 pb-1.5">
+                <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
+                  Chapter 01
+                </span>
+                <span className="text-xs font-mono text-amber-800/80">
+                  {pages[0]?.date}
+                </span>
+              </div>
+              <h3 className="font-serif text-2xl text-amber-950 font-bold mt-2">
+                {pages[0]?.chapterTitle}
+              </h3>
+            </div>
+
+            {/* 2 Photos */}
+            <div className="grid grid-cols-2 gap-3 my-auto py-1">
+              {renderPolaroid(pages[0]?.photo1, "h-36 sm:h-40")}
+              {renderPolaroid(pages[0]?.photo2, "h-36 sm:h-40")}
+            </div>
+
+            <div className="text-right text-[10px] font-mono text-amber-800/50">Page 2</div>
+          </div>
+        );
+
+      case 1:
+        // Chapter 2 (Right: 2 More Travel Photos!)
+        return (
+          <div className="h-full flex flex-col justify-between p-5 sm:p-7">
+            <div>
+              <div className="flex items-center justify-between border-b border-amber-900/20 pb-1.5">
+                <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
+                  Our Adventures
+                </span>
+                <span className="text-xs font-mono text-amber-800/80">
+                  Wanderlust
+                </span>
+              </div>
+              <h3 className="font-serif text-2xl text-amber-950 font-bold mt-2">
+                Favorite Escapes
+              </h3>
+            </div>
+
+            {/* 2 Photos */}
+            <div className="grid grid-cols-2 gap-3 my-auto py-1">
+              {renderPolaroid(pages[1]?.photo3, "h-36 sm:h-40")}
+              {renderPolaroid(pages[1]?.photo4, "h-36 sm:h-40")}
+            </div>
+
+            <div className="text-right text-[10px] font-mono text-amber-800/50">Page 4</div>
+          </div>
+        );
+
+      case 2:
+        // Chapter 3 (Right: Large Portrait of Her)
+        return (
+          <div className="h-full flex flex-col justify-between p-5 sm:p-7">
+            <div>
+              <div className="flex items-center justify-between border-b border-amber-900/20 pb-1.5">
+                <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
+                  Her Portrait
+                </span>
+                <span className="text-xs font-mono text-amber-800/80">
+                  Always Radiant
+                </span>
+              </div>
+              <h3 className="font-serif text-2xl text-amber-950 font-bold mt-2">
+                The Girl of My Dreams
+              </h3>
+            </div>
+
+            {/* Large Portrait */}
+            <div className="my-auto py-2">
+              {renderPolaroid(pages[2]?.photo1, "h-48 sm:h-52", "max-w-[280px]")}
+            </div>
+
+            <div className="text-right text-[10px] font-mono text-amber-800/50">Page 6</div>
+          </div>
+        );
+
+      case 3:
+        // Chapter 4 (Right: 2 Candid Laugh Photos - NO JOKE STICKER)
+        return (
+          <div className="h-full flex flex-col justify-between p-5 sm:p-7">
+            <div>
+              <div className="flex items-center justify-between border-b border-amber-900/20 pb-1.5">
+                <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
+                  Spontaneous Magic
+                </span>
+                <span className="text-xs font-mono text-amber-800/80">
+                  Unrehearsed
+                </span>
+              </div>
+              <h3 className="font-serif text-2xl text-amber-950 font-bold mt-2">
+                Moments of Joy
+              </h3>
+            </div>
+
+            {/* 2 Candid Photos */}
+            <div className="grid grid-cols-2 gap-3 my-auto py-1">
+              {renderPolaroid(pages[3]?.photo1, "h-36 sm:h-40")}
+              {renderPolaroid(pages[3]?.photo2, "h-36 sm:h-40")}
+            </div>
+
+            <div className="text-right text-[10px] font-mono text-amber-800/50">Page 8</div>
+          </div>
+        );
+
+      case 4:
+        // Chapter 5 (Right: Interactive Secret Love Letter Envelope!)
+        return (
+          <div className="h-full flex flex-col justify-between p-5 sm:p-7">
+            <div>
+              <div className="flex items-center justify-between border-b border-amber-900/20 pb-1.5">
+                <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
+                  A Letter For You
+                </span>
+                <span className="text-xs font-mono text-amber-800/80">
+                  Sealed
+                </span>
+              </div>
+              <h3 className="font-serif text-2xl text-amber-950 font-bold mt-2">
+                Unseal My Heart
+              </h3>
+            </div>
+
+            {/* Interactive 3D Unsealing Envelope */}
+            <div className="my-auto w-full" onClick={(e) => e.stopPropagation()}>
+              <InteractiveEnvelope letter={pages[4]?.letter} />
+            </div>
+
+            <p className="text-[11px] text-center text-amber-800/60 font-mono">
+              Written with all my heart by {couple.hisName}
+            </p>
+
+            <div className="text-right text-[10px] font-mono text-amber-800/50">Page 10</div>
+          </div>
+        );
+
+      case 5:
+        // Chapter 6 (Right: 2 Milestone Polaroids)
+        return (
+          <div className="h-full flex flex-col justify-between p-5 sm:p-7">
+            <div>
+              <div className="flex items-center justify-between border-b border-amber-900/20 pb-1.5">
+                <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
+                  Every Second
+                </span>
+                <span className="text-xs font-mono text-amber-800/80">
+                  Milestones
+                </span>
+              </div>
+              <h3 className="font-serif text-2xl text-amber-950 font-bold mt-2">
+                Blessed Moments
+              </h3>
+            </div>
+
+            {/* 2 Polaroids */}
+            <div className="grid grid-cols-2 gap-3 my-auto py-1">
+              {renderPolaroid(pages[5]?.photo1, "h-36 sm:h-40")}
+              {renderPolaroid(pages[5]?.photo2, "h-36 sm:h-40")}
+            </div>
+
+            <div className="text-right text-[10px] font-mono text-amber-800/50">Page 12</div>
+          </div>
+        );
+
+      case 6:
+        // Chapter 7 (Right: Proposal Finale - NO RUNAWAY JOKE)
+        return (
+          <div className="h-full flex flex-col justify-between p-6 sm:p-8 text-center">
+            <div className="text-right border-b border-amber-900/20 pb-1.5">
+              <span className="text-xs uppercase font-serif font-bold tracking-widest text-rose-800">
+                The Question of Forever
+              </span>
+            </div>
+
+            <div className="my-auto py-4 space-y-4">
+              <div className="w-16 h-16 rounded-full bg-rose-100 border-2 border-rose-400 mx-auto flex items-center justify-center shadow-md">
+                <Heart size={30} className="fill-rose-600 text-rose-600 animate-heart-beat" />
+              </div>
+
+              <h4 className="font-serif text-2xl sm:text-3xl text-amber-950 font-bold leading-tight">
+                {pages[6]?.finalQuestion}
+              </h4>
+
+              <p className="font-serif italic text-xs sm:text-sm text-amber-900/80 max-w-xs mx-auto">
+                {pages[6]?.finalQuote}
+              </p>
+
+              {/* Romantic Forever Seal */}
+              <div className="pt-2" onClick={(e) => e.stopPropagation()}>
+                <div
+                  onClick={handleYesProposal}
+                  className="cursor-pointer inline-flex items-center gap-2.5 px-6 py-2.5 rounded-full border border-rose-300 bg-rose-50/90 shadow-md hover:scale-105 active:scale-95 transition-transform"
+                >
+                  <Heart size={18} className="fill-rose-600 text-rose-600 animate-heart-beat" />
+                  <span className="font-handwriting text-xl text-rose-950 font-bold">
+                    {yesClicked ? "Our Forever Begins ❤️" : "Forever & Always ❤️"}
+                  </span>
+                </div>
+              </div>
+
+              {yesClicked && (
+                <p className="font-handwriting text-xl text-rose-700 animate-bounce pt-1 font-bold">
+                  Here's to a lifetime of love and adventure! ✨
+                </p>
+              )}
+            </div>
+
+            <div className="text-right text-[10px] font-mono text-amber-800/50">Page 14</div>
           </div>
         );
 

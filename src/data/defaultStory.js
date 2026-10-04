@@ -8,138 +8,164 @@ export const defaultStory = {
     dedication: "To the girl whose smile became my compass, and whose laugh is my favorite song in all of existence.",
   },
   pages: [
-    // Page 2 & 3: Chapter 1 - The Serendipity
+    // Spread 0: Chapter 1 - The Serendipity
     {
       chapterNumber: "01",
       chapterTitle: "The Serendipity",
       date: "The Day Everything Changed",
       tagline: "Out of 8 billion people, the universe led me to you.",
+      dedicationPhoto: {
+        url: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80",
+        caption: "Where our journey started",
+        rotation: -1,
+      },
       photo1: {
-        url: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=900&q=80",
-        caption: "The first moment my eyes found yours",
-        rotation: -3,
+        url: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80",
+        caption: "The first time our eyes met",
+        rotation: -2,
       },
       photo2: {
-        url: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=900&q=80",
-        caption: "Late night coffee & endless conversations",
+        url: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=800&q=80",
+        caption: "Our first coffee & smiles",
         rotation: 2,
       },
-      storyLeft: "They say some people walk into your life and leave quiet footprints on your mind. But you—you walked in like golden sunlight bursting through autumn leaves, altering the entire atmosphere of my world.",
-      storyRight: "We started with simple greetings, nervous chuckles, and hours that slipped away like seconds. Before I even realized it, you weren't just a part of my story; you had become the rhythm of my heartbeat.",
-      quote: "“In you, I found both my peace and my wild adventure.”",
     },
-    // Page 4 & 5: Chapter 2 - Wandering Together
+    // Spread 1: Chapter 2 - Wandering Together
     {
       chapterNumber: "02",
-      chapterTitle: "Wandering Hand in Hand",
+      chapterTitle: "Wandering Together",
       date: "Under Open Skies & City Lights",
-      tagline: "Anywhere feels like home as long as you're beside me.",
+      tagline: "Anywhere feels like home with you.",
       photo1: {
-        url: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?auto=format&fit=crop&w=900&q=80",
-        caption: "Our first roadtrip & golden hour breeze",
-        rotation: 3,
+        url: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80",
+        caption: "First road trip & endless sunsets",
+        rotation: -2,
       },
       photo2: {
-        url: "https://images.unsplash.com/photo-1516575334481-f85287c2c82d?auto=format&fit=crop&w=900&q=80",
-        caption: "Holding hands watching the horizon fade",
-        rotation: -2,
+        url: "https://images.unsplash.com/photo-1516575334481-f85287c2c82d?auto=format&fit=crop&w=800&q=80",
+        caption: "Holding hands by the ocean",
+        rotation: 3,
       },
-      storyLeft: "Remember that road trip where we sang our hearts out off-key with the windows rolled down? The cool wind in your hair, your cheeks glowing rose-pink, and your fingers laced through mine over the center console.",
-      storyRight: "It wasn't about the destination or the places we checked off a map. It was the way the whole world paused every time you leaned your head on my shoulder, looking at the distant stars.",
-      ticketDetails: {
-        flight: "LOVE-777",
-        from: "Everywhere",
-        to: "Wherever You Are",
-        seat: "Next to You",
+      photo3: {
+        url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+        caption: "Golden hour horizon",
+        rotation: -1,
+      },
+      photo4: {
+        url: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80",
+        caption: "Mountain air & cold hands",
+        rotation: 2,
       },
     },
-    // Page 6 & 7: Chapter 3 - The Little Things I Adore
+    // Spread 2: Chapter 3 - Everyday Magic
     {
       chapterNumber: "03",
-      chapterTitle: "Reasons My Heart Chose You",
-      date: "A Million Unspoken Details",
-      tagline: "Love isn't in grand gestures; it lives in your quiet little habits.",
+      chapterTitle: "The Little Moments",
+      date: "Quiet Days, Deepest Love",
+      tagline: "Love in every silent glance.",
       photo1: {
-        url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=900&q=80",
-        caption: "That radiant, infectious smile of yours",
+        url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
+        caption: "That radiant smile of yours",
+        rotation: -1,
+      },
+      photo2: {
+        url: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80",
+        caption: "Sunlight dancing in your hair",
+        rotation: 2,
+      },
+      photo3: {
+        url: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80",
+        caption: "Pure elegance & grace",
         rotation: -2,
       },
-      reasons: [
-        { id: 1, title: "Your contagious giggle", desc: "The way you snort when something is genuinely hilarious." },
-        { id: 2, title: "Your soft empathy", desc: "How you care so deeply for tiny stray kittens and little flowers." },
-        { id: 3, title: "The warmth of your embrace", desc: "The feeling that all the heavy noise of the world just stops." },
-        { id: 4, title: "Your sparkling eyes", desc: "How they light up like constellations when you talk about your passions." },
-        { id: 5, title: "Your playful side", desc: "Stealing my oversized hoodies and pretending they were always yours." },
-        { id: 6, title: "Being my greatest strength", desc: "Believing in me even during the moments I doubt myself." },
-      ],
-      loveQuote: "If I had a flower for every time I thought of you, I could walk through my garden forever.",
     },
-    // Page 8 & 9: Chapter 4 - Laughter & Candid Chaos
+    // Spread 3: Chapter 4 - Candid Memories
     {
       chapterNumber: "04",
-      chapterTitle: "Unfiltered Smiles & Sweet Chaos",
-      date: "The Memories Between The Poses",
-      tagline: "My favorite photographs are the ones where we couldn't stop laughing.",
+      chapterTitle: "Candid & Unfiltered",
+      date: "Between The Poses",
+      tagline: "The moments we couldn't stop laughing.",
       filmPhotos: [
         {
           url: "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&q=80",
-          caption: "Mid-laugh before we dropped our ice cream",
+          caption: "Mid-laugh snapshot",
         },
         {
           url: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?auto=format&fit=crop&w=800&q=80",
-          caption: "Late evening walks & silly jokes",
+          caption: "Evening strolls & giggles",
         },
         {
-          url: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80",
-          caption: "Your pretty candid expression",
+          url: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&w=800&q=80",
+          caption: "Unrehearsed joy",
         },
       ],
-      storyLeft: "The world sees you poised, graceful, and stunning. But my favorite version of you is the goofy, uninhibited girl who makes funny faces across the dinner table and dances in supermarket aisles.",
-      storyRight: "Life with you is never dull. Even a boring Sunday doing laundry feels like an indie movie scene because your laughter turns the ordinary into gold.",
+      photo1: {
+        url: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80",
+        caption: "Favorite days with you",
+        rotation: -2,
+      },
+      photo2: {
+        url: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80",
+        caption: "Silly smiles & warm hugs",
+        rotation: 2,
+      },
     },
-    // Page 10 & 11: Chapter 5 - The Secret Love Letter
+    // Spread 4: Chapter 5 - The Secret Love Letter
     {
       chapterNumber: "05",
       chapterTitle: "Whispers From My Heart",
       date: "Sealed With A Heartbeat",
-      tagline: "Click the envelope to unseal this letter.",
+      tagline: "Tap the wax seal to open this letter.",
+      letterPhoto: {
+        url: "https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=800&q=80",
+        caption: "Written only for you",
+        rotation: -2,
+      },
       letter: {
         salutation: "My Sweetest Soul,",
-        body: "Sometimes words feel too clumsy to hold the weight of what I feel for you. When you fall asleep with your hand resting in mine, when you look at me across a crowded room and smile, I whisper a quiet thank you to the heavens.\n\nYou have seen me at my strongest, but more importantly, you have held me gently at my most fragile. You made love feel safe, effortless, and unconditional.\n\nNo matter what storms come or where our paths wander, my hand will always be reaching for yours.",
+        body: "Sometimes words feel too small to hold the weight of how much I cherish you.\n\nWhen you fall asleep with your hand in mine, when you look at me across a crowded room and smile, I whisper a quiet thank you to the universe.\n\nYou made love feel safe, effortless, and unconditional. No matter where our paths wander, my hand will always be reaching for yours.",
         closing: "Yours completely & irrevocably,",
         signature: "Mayank",
       },
     },
-    // Page 12 & 13: Chapter 6 - Our Timeline & Milestones
+    // Spread 5: Chapter 6 - Our Journey Through Time
     {
       chapterNumber: "06",
-      chapterTitle: "Our Journey Through Time",
-      date: "Counting Every Blessed Second",
-      tagline: "A million shared minutes, and yet it feels like day one.",
-      milestones: [
-        { date: "Day 1", title: "First Eye Contact", icon: "sparkles", desc: "A spark that set a whole universe ablaze." },
-        { date: "Month 3", title: "The First 'I Love You'", icon: "heart", desc: "Three words that felt like coming home." },
-        { date: "Year 1", title: "365 Days of Joy", icon: "sun", desc: "Celebrated under starlight and sweet cake." },
-        { date: "Today", title: "Still Falling For You", icon: "flame", desc: "Loving you more deeply than yesterday." },
-      ],
-      photo1: {
-        url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=900&q=80",
+      chapterTitle: "Our Journey In Time",
+      date: "Counting Every Second",
+      tagline: "A million shared minutes, and it feels like day one.",
+      milestonePhoto: {
+        url: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80",
         caption: "The queen of my heart",
         rotation: -1,
       },
+      photo1: {
+        url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80",
+        caption: "Growing together every day",
+        rotation: 2,
+      },
+      photo2: {
+        url: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80",
+        caption: "Still falling for your eyes",
+        rotation: -2,
+      },
     },
-    // Page 14 & 15: Chapter 7 - Sacred Promises & Forever
+    // Spread 6: Chapter 7 - Forever & Always
     {
       chapterNumber: "07",
       chapterTitle: "Forever & Always",
       date: "To Infinity & Beyond",
-      tagline: "This isn't the ending; it's just the prologue of our forever.",
-      promises: [
-        "I promise to always listen, even when you repeat the same story three times.",
-        "I promise to hold your hand when your spirit feels tired.",
-        "I promise to celebrate every victory of yours as if it were my own.",
-        "I promise to love you unconditionally in all your seasons.",
-      ],
+      tagline: "The best chapters are the ones we haven't lived yet.",
+      photo1: {
+        url: "https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=800&q=80",
+        caption: "Two souls, one heartbeat",
+        rotation: -2,
+      },
+      photo2: {
+        url: "https://images.unsplash.com/photo-1537633552985-df8429e8048b?auto=format&fit=crop&w=800&q=80",
+        caption: "Hand in hand towards tomorrow",
+        rotation: 2,
+      },
       finalQuestion: "Will you make forever memories with me?",
       finalQuote: "“I loved you yesterday, I love you still, I always have, I always will.”",
     },
