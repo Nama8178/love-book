@@ -417,7 +417,9 @@ export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPage
               </h3>
             </div>
 
-            <RelationshipTimer startDateString={couple.anniversaryDate} />
+            <div onClick={(e) => e.stopPropagation()}>
+              <RelationshipTimer startDateString={couple.anniversaryDate} />
+            </div>
 
             <div className="space-y-1.5 my-auto">
               {pages[5]?.milestones?.map((m, idx) => (
@@ -678,7 +680,7 @@ export default function Book3D({ storyData, onPhotoClick, bookControlRef, onPage
               </span>
             </div>
 
-            <div className="my-auto">
+            <div className="my-auto w-full" onClick={(e) => e.stopPropagation()}>
               <InteractiveEnvelope letter={pages[4]?.letter} />
             </div>
 
